@@ -29,6 +29,36 @@ tags:
     description: 고객사별 거래 공장 조회와 메모 관리
 
 paths:
+  /api/purchase/products:
+    $ref: './purchase-openapi.json#/paths/~1api~1purchase~1products'
+  /api/purchase/products/{id}:
+    $ref: './purchase-openapi.json#/paths/~1api~1purchase~1products~1{id}'
+  /api/admin/purchase/products:
+    $ref: './purchase-openapi.json#/paths/~1api~1admin~1purchase~1products'
+  /api/admin/purchase/products/{id}:
+    $ref: './purchase-openapi.json#/paths/~1api~1admin~1purchase~1products~1{id}'
+  /api/admin/purchase/products/import:
+    $ref: './purchase-openapi.json#/paths/~1api~1admin~1purchase~1products~1import'
+  /api/admin/purchase/products/{id}/images:
+    $ref: './purchase-openapi.json#/paths/~1api~1admin~1purchase~1products~1{id}~1images'
+  /api/admin/purchase/products/{id}/images/{imageId}:
+    $ref: './purchase-openapi.json#/paths/~1api~1admin~1purchase~1products~1{id}~1images~1{imageId}'
+  /api/purchase/images/{imageId}:
+    $ref: './purchase-openapi.json#/paths/~1api~1purchase~1images~1{imageId}'
+  /api/purchase/cart:
+    $ref: './purchase-openapi.json#/paths/~1api~1purchase~1cart'
+  /api/purchase/cart/items:
+    $ref: './purchase-openapi.json#/paths/~1api~1purchase~1cart~1items'
+  /api/purchase/cart/items/{id}:
+    $ref: './purchase-openapi.json#/paths/~1api~1purchase~1cart~1items~1{id}'
+  /api/purchase/orders:
+    $ref: './purchase-openapi.json#/paths/~1api~1purchase~1orders'
+  /api/purchase/orders/{id}:
+    $ref: './purchase-openapi.json#/paths/~1api~1purchase~1orders~1{id}'
+  /api/admin/purchase/orders:
+    $ref: './purchase-openapi.json#/paths/~1api~1admin~1purchase~1orders'
+  /api/admin/purchase/orders/{id}:
+    $ref: './purchase-openapi.json#/paths/~1api~1admin~1purchase~1orders~1{id}'
   /api/account/invitation-code:
     get:
       security:

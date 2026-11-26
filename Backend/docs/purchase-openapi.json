@@ -1,0 +1,1839 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "BEN 사입 API",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000"
+    }
+  ],
+  "paths": {
+    "/api/purchase/products": {
+      "get": {
+        "summary": "고객용 공개 상품 목록",
+        "description": "",
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "accessCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Product"
+                      }
+                    },
+                    "total": {
+                      "type": "integer"
+                    },
+                    "page": {
+                      "type": "integer"
+                    },
+                    "pageSize": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": []
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          }
+        },
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "market",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/purchase/products/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "get": {
+        "summary": "공개 상품 상세",
+        "description": "",
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "accessCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          }
+        }
+      }
+    },
+    "/api/admin/purchase/products": {
+      "get": {
+        "summary": "운영자 상품 목록 (판매 중지 포함)",
+        "description": "",
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "accessCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Product"
+                      }
+                    },
+                    "total": {
+                      "type": "integer"
+                    },
+                    "page": {
+                      "type": "integer"
+                    },
+                    "pageSize": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": []
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          }
+        },
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "market",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "post": {
+        "summary": "운영자 상품 등록",
+        "description": "SUPER_ADMIN/ADMIN만 가능. 컬러×사이즈 조합 최대 500개. 시장·가게번호·품번은 중복 불가.",
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "accessCookie": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/purchase/products/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "get": {
+        "summary": "운영자 상품 상세",
+        "description": "",
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "accessCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          }
+        }
+      },
+      "patch": {
+        "summary": "운영자 상품 수정/판매 중지/사진 순서 변경",
+        "description": "sizes/colors는 전체 목록 교체. 제외 옵션은 비활성화. imageIds는 현재 사진 전체 ID를 순서대로 지정.",
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "accessCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductPatch"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/purchase/products/import": {
+      "post": {
+        "summary": "운영자 상품 일괄 등록",
+        "description": "최대 100개. 모두 검증 후 트랜잭션으로 등록. JSON items 또는 2MiB 이하 XLSX 첫 시트. 헤더: market,shopNumber,productNumber,unitPrice,sizes,colors,moq,leadTime,memo. sizes/colors는 | 구분. 수식 금지. 사진은 별도 업로드.",
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "accessCookie": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Product"
+                      }
+                    }
+                  },
+                  "required": []
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/ProductInput"
+                    },
+                    "minItems": 1,
+                    "maxItems": 100
+                  }
+                },
+                "required": [
+                  "items"
+                ]
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                },
+                "required": [
+                  "file"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/purchase/products/{id}/images": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "post": {
+        "summary": "상품 사진 업로드",
+        "description": "JPEG/PNG/WebP 파일당 5MiB, 상품당 10장. 마지막 순서에 추가. 첫 사진 대표.",
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "accessCookie": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Image"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                },
+                "required": [
+                  "file"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/purchase/products/{id}/images/{imageId}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "imageId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "delete": {
+        "summary": "상품 사진 삭제",
+        "description": "",
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "accessCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "deleted": {
+                      "const": true
+                    }
+                  },
+                  "required": []
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          }
+        }
+      }
+    },
+    "/api/purchase/images/{imageId}": {
+      "parameters": [
+        {
+          "name": "imageId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "get": {
+        "summary": "로그인 사용자 사진 조회",
+        "description": "",
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "accessCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "사진 바이너리, private/no-store",
+            "content": {
+              "image/png": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          }
+        }
+      }
+    },
+    "/api/purchase/cart": {
+      "get": {
+        "summary": "본인 장바구니 조회",
+        "description": "MAIN/SUB 고객만 가능. 비활성 항목도 available=false로 반환. total은 전체 담긴 항목 합계.",
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "accessCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Cart"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          }
+        }
+      }
+    },
+    "/api/purchase/cart/items": {
+      "put": {
+        "summary": "본인 장바구니 옵션 수량 설정",
+        "description": "동일 옵션은 수량을 누적하지 않고 절대값으로 설정. 최대 500행. MOQ는 주문 시 검증.",
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "accessCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "cartId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "variantId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "quantity": {
+                      "type": "integer"
+                    },
+                    "note": {
+                      "type": "string"
+                    }
+                  },
+                  "required": []
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CartInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/purchase/cart/items/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "delete": {
+        "summary": "본인 장바구니 행 삭제",
+        "description": "",
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "accessCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "deleted": {
+                      "const": true
+                    }
+                  },
+                  "required": []
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          }
+        }
+      }
+    },
+    "/api/purchase/orders": {
+      "get": {
+        "summary": "고객사 주문 목록",
+        "description": "",
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "accessCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Order"
+                      }
+                    },
+                    "total": {
+                      "type": "integer"
+                    },
+                    "page": {
+                      "type": "integer"
+                    },
+                    "pageSize": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": []
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          }
+        },
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          }
+        ]
+      },
+      "post": {
+        "summary": "선택 항목 주문 및 예치금 차감",
+        "description": "MAIN/SUB 가능. 상품별 선택 수량 합계에 MOQ 적용. 선택 행만 제거. 같은 requestKey와 동일 본문 재시도는 기존 주문 반환(201). 가격/잔액/옵션 검증 실패 시 전체 롤백. 배송비는 미산정이며 상품대금만 차감.",
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "accessCookie": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderDetail"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/purchase/orders/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "get": {
+        "summary": "고객사 주문 상세",
+        "description": "",
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "accessCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderDetail"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          }
+        }
+      }
+    },
+    "/api/admin/purchase/orders": {
+      "get": {
+        "summary": "운영자 전체 주문 조회",
+        "description": "",
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "accessCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Order"
+                      }
+                    },
+                    "total": {
+                      "type": "integer"
+                    },
+                    "page": {
+                      "type": "integer"
+                    },
+                    "pageSize": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": []
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          }
+        },
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          },
+          {
+            "name": "accountId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      }
+    },
+    "/api/admin/purchase/orders/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "get": {
+        "summary": "운영자 주문 상세",
+        "description": "",
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "accessCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderDetail"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Error400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Error409"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "accessCookie": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "ben_access_token"
+      }
+    },
+    "schemas": {
+      "ProductInput": {
+        "type": "object",
+        "properties": {
+          "market": {
+            "type": "string"
+          },
+          "shopNumber": {
+            "type": "string"
+          },
+          "productNumber": {
+            "type": "string"
+          },
+          "unitPrice": {
+            "type": "string",
+            "pattern": "^(0|[1-9]\\d{0,9})(\\.\\d{1,2})?$"
+          },
+          "sizes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "maxItems": 50,
+            "uniqueItems": true
+          },
+          "colors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "hex": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "pattern": "^#[0-9a-fA-F]{6}$"
+                }
+              },
+              "required": [
+                "name"
+              ]
+            },
+            "minItems": 1,
+            "maxItems": 50
+          },
+          "moq": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100000,
+            "default": 1
+          },
+          "leadTime": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "memo": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "active": {
+            "type": "boolean",
+            "default": true
+          }
+        },
+        "required": [
+          "market",
+          "shopNumber",
+          "productNumber",
+          "unitPrice",
+          "sizes",
+          "colors"
+        ],
+        "additionalProperties": false
+      },
+      "ProductPatch": {
+        "type": "object",
+        "properties": {
+          "market": {
+            "type": "string"
+          },
+          "shopNumber": {
+            "type": "string"
+          },
+          "productNumber": {
+            "type": "string"
+          },
+          "unitPrice": {
+            "type": "string",
+            "pattern": "^(0|[1-9]\\d{0,9})(\\.\\d{1,2})?$"
+          },
+          "sizes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "maxItems": 50,
+            "uniqueItems": true
+          },
+          "colors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "hex": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "pattern": "^#[0-9a-fA-F]{6}$"
+                }
+              },
+              "required": [
+                "name"
+              ]
+            },
+            "minItems": 1,
+            "maxItems": 50
+          },
+          "moq": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100000,
+            "default": 1
+          },
+          "leadTime": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "memo": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "active": {
+            "type": "boolean",
+            "default": true
+          },
+          "imageIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "maxItems": 10,
+            "uniqueItems": true
+          }
+        },
+        "required": [],
+        "additionalProperties": false,
+        "minProperties": 1
+      },
+      "Variant": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "productId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "color": {
+            "type": "string"
+          },
+          "colorHex": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "size": {
+            "type": "string"
+          },
+          "active": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "productId",
+          "color",
+          "size",
+          "active"
+        ]
+      },
+      "Image": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "productId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "position": {
+            "type": "integer"
+          },
+          "url": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "position",
+          "url"
+        ]
+      },
+      "Product": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "market": {
+            "type": "string"
+          },
+          "shopNumber": {
+            "type": "string"
+          },
+          "productNumber": {
+            "type": "string"
+          },
+          "unitPrice": {
+            "type": "string",
+            "pattern": "^(0|[1-9]\\d{0,9})(\\.\\d{1,2})?$"
+          },
+          "moq": {
+            "type": "integer"
+          },
+          "leadTime": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "memo": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "createdBy": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "currency": {
+            "const": "CNY"
+          },
+          "variants": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Variant"
+            }
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Image"
+            }
+          }
+        },
+        "required": []
+      },
+      "CartInput": {
+        "type": "object",
+        "properties": {
+          "variantId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "quantity": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100000
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 2000,
+            "default": ""
+          }
+        },
+        "required": [
+          "variantId",
+          "quantity"
+        ],
+        "additionalProperties": false
+      },
+      "CartItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "quantity": {
+            "type": "integer"
+          },
+          "note": {
+            "type": "string"
+          },
+          "variant": {
+            "$ref": "#/components/schemas/Variant"
+          },
+          "product": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "market": {
+                "type": "string"
+              },
+              "shopNumber": {
+                "type": "string"
+              },
+              "productNumber": {
+                "type": "string"
+              },
+              "unitPrice": {
+                "type": "string",
+                "pattern": "^(0|[1-9]\\d{0,9})(\\.\\d{1,2})?$"
+              },
+              "active": {
+                "type": "boolean"
+              },
+              "moq": {
+                "type": "integer"
+              }
+            },
+            "required": []
+          },
+          "available": {
+            "type": "boolean"
+          },
+          "amount": {
+            "type": "string",
+            "pattern": "^(0|[1-9]\\d{0,9})(\\.\\d{1,2})?$"
+          }
+        },
+        "required": []
+      },
+      "Cart": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CartItem"
+            }
+          },
+          "total": {
+            "type": "string",
+            "pattern": "^(0|[1-9]\\d{0,9})(\\.\\d{1,2})?$"
+          },
+          "quantity": {
+            "type": "integer"
+          },
+          "productCount": {
+            "type": "integer"
+          },
+          "currency": {
+            "const": "CNY"
+          }
+        },
+        "required": []
+      },
+      "OrderInput": {
+        "type": "object",
+        "properties": {
+          "requestKey": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "cartItemIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "minItems": 1,
+            "maxItems": 500,
+            "uniqueItems": true
+          },
+          "expectedTotal": {
+            "type": "string",
+            "pattern": "^(0|[1-9]\\d{0,9})(\\.\\d{1,2})?$"
+          },
+          "shippingMethod": {
+            "enum": [
+              "SEA",
+              "AIR"
+            ]
+          }
+        },
+        "required": [
+          "requestKey",
+          "cartItemIds",
+          "expectedTotal",
+          "shippingMethod"
+        ],
+        "additionalProperties": false
+      },
+      "Order": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "orderCode": {
+            "type": "string"
+          },
+          "accountId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "createdBy": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "total": {
+            "type": "string",
+            "pattern": "^(0|[1-9]\\d{0,9})(\\.\\d{1,2})?$"
+          },
+          "shippingMethod": {
+            "enum": [
+              "SEA",
+              "AIR"
+            ]
+          },
+          "status": {
+            "const": "PLACED"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": []
+      },
+      "OrderDetail": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Order"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "currency": {
+                "const": "CNY"
+              },
+              "requestKey": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "shippingFeeStatus": {
+                "const": "NOT_CALCULATED"
+              },
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "orderId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "productId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "variantId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "quantity": {
+                      "type": "integer"
+                    },
+                    "amount": {
+                      "type": "string",
+                      "pattern": "^(0|[1-9]\\d{0,9})(\\.\\d{1,2})?$"
+                    },
+                    "note": {
+                      "type": "string"
+                    },
+                    "snapshot": {
+                      "type": "object",
+                      "properties": {
+                        "market": {
+                          "type": "string"
+                        },
+                        "shopNumber": {
+                          "type": "string"
+                        },
+                        "productNumber": {
+                          "type": "string"
+                        },
+                        "color": {
+                          "type": "string"
+                        },
+                        "size": {
+                          "type": "string"
+                        },
+                        "colorHex": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "unitPrice": {
+                          "type": "string",
+                          "pattern": "^(0|[1-9]\\d{0,9})(\\.\\d{1,2})?$"
+                        },
+                        "leadTime": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "memo": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      },
+                      "required": []
+                    }
+                  },
+                  "required": []
+                }
+              }
+            },
+            "required": []
+          }
+        ]
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              },
+              "details": {
+                "type": "object"
+              }
+            },
+            "required": [
+              "code",
+              "message"
+            ]
+          }
+        },
+        "required": [
+          "error"
+        ]
+      }
+    },
+    "responses": {
+      "Error400": {
+        "description": "입력 오류 / INVALID_IMPORT_ROW / VARIANT_LIMIT / INVALID_IMAGE_ORDER",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "Error401": {
+        "description": "로그인 필요",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "Error403": {
+        "description": "역할 권한 없음",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "Error404": {
+        "description": "상품/주문/본인 장바구니 항목 없음",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "Error409": {
+        "description": "중복 상품 / 판매 중지 / IMAGE_LIMIT / MOQ_NOT_MET / PRICE_CHANGED / INSUFFICIENT_BALANCE / IDEMPOTENCY_CONFLICT",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      }
+    }
+  }
+}

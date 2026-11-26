@@ -1,5 +1,22 @@
 # BEN Backend Agent Notes
 
+## 2026-11-25 사입 상품·장바구니·주문
+- 운영자(SUPER_ADMIN/ADMIN)만 사입 상품 등록·수정·판매 중지·Excel 일괄 등록 가능. 고객 MAIN/SUB는 공용 카탈로그 조회와 본인 장바구니/주문 가능.
+- 테이블 7개 추가: purchase_products, purchase_product_variants, purchase_product_images, purchase_carts, purchase_cart_items, purchase_orders, purchase_order_items. 스키마는 src/db/purchase-schema.ts, schema.ts에서 export. 마이그레이션 0010.
+- 기능은 src/lib/purchase의 auth/schemas/products/images/import/cart/orders/money/http로 분리한다. API 경로는 /api/purchase 및 /api/admin/purchase.
+- 사진은 최대 10장, JPEG/PNG/WebP 파일당 5MiB. 순서 첫 장 대표. 현재 이미지 내용은 별도 DB 테이블 저장(S3 미연결). 목록에는 이미지 바이너리를 포함하지 않는다.
+- 자유 입력 컬러/사이즈 각 최대 50개, 조합 최대 500개. 옵션 교체 시 동일 이름 조합 ID 유지, 제외 조합 비활성화. 기존 주문은 상품/옵션/가격 스냅샷 보존.
+- 장바구니는 고객사+사용자별, 최대 500행. PUT은 수량 절대값 설정. 주문은 고객사 공유 조회, 주문자 기록. 타 고객사 주문과 타인의 장바구니 접근 금지.
+- 주문 시 account 행 잠금(기존 예치금 수기 등록과 동일), 상품 잠금 후 최신 옵션/가격/MOQ/잔액 검사. 주문 생성·예치금 차감·선택 장바구니 행 삭제를 단일 트랜잭션으로 처리. 금액은 bigint 소수단위 계산 및 문자열 응답.
+- requestKey UUID + 정규화 요청 해시로 중복 차감 방지. expectedTotal 불일치 409. MOQ는 선택한 상품별 옵션 수량 합계.
+- SUB는 예치금 직접 쓰기 API 접근 불가하나 주문에 따른 회사 예치금 차감 가능(이번 정책). 운영자가 고객 대신 주문하는 API는 제공하지 않는다.
+- 배송은 SEA/AIR 저장, 상품대금만 차감. 배송비 정책 미정이므로 shippingFeeStatus=NOT_CALCULATED. 주문 이후 진행상태 변경·취소/환불 API는 별도 정책 확정 후 구현 대상.
+- Excel은 2MiB 이하 .xlsx 첫 시트, 최대 100상품. 헤더/옵션 구분자/JSON 일괄 등록 계약은 docs/purchase-api.md. 전체 검증·일괄 트랜잭션.
+- 명세: docs/purchase-openapi.json을 docs/openapi.yaml에서 참조. 프론트 수정 없이 연동 계약만 제공.
+- 검증: BEN_PURCHASE_DB_TEST=1로 실제 DB 회귀, BEN_PURCHASE_HTTP_TEST=1 추가 시 localhost:3000 HTTP+Redis JWT 권한/주문 테스트. 테스트용 데이터/세션은 정리한다.
+
+
+
 ## 2026-11-23 초대코드 및 권한 변경 (현재 정책)
 
 - SUB 가입/SSO 소속 신청은 `invitationCode`로 고객사를 선택한다. 사업자번호나 `accountCode`로 신청하지 않는다. SMS 및 MAIN의 승인/거절 흐름은 유지한다.

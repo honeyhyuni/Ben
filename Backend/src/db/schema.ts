@@ -15,6 +15,7 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
+export * from "./purchase-schema";
 
 export const depositTransactions = pgTable("deposit_transactions", {
   id: uuid("id").primaryKey().defaultRandom(),

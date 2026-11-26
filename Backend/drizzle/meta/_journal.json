@@ -71,6 +71,13 @@
       "when": 1795417752186,
       "tag": "0009_sparkling_vin_gonzales",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1795588163264,
+      "tag": "0010_real_mathemanic",
+      "breakpoints": true
     }
   ]
 }
